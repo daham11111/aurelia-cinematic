@@ -1,0 +1,30 @@
+I have prepared a real cinematic SCROLL-SCRUB FRAME SEQUENCE from my uploaded AURELIA building video.
+
+THE MEDIA IS HOSTED HERE:
+[PASTE YOUR GITHUB PAGES OR PUBLIC ASSET BASE URL HERE]
+
+Frame files follow this exact pattern:
+frames/frame_0000.webp ... frames/frame_0095.webp
+There are 96 frames at 1280x720 extracted from my original 8-second architectural film.
+The hosted folder also has an index.html demonstration of the correct scroll behavior.
+
+Please UPDATE ONLY Scene 01 of my EXISTING AURELIA React Artifact.
+
+IMPLEMENTATION:
+- Keep AURELIA logo, header, menu, typography, layout, and existing Scene 02-09 exactly as they are.
+- Replace the temporary cloud/parallax effect with a full-viewport HTML canvas using the REAL HOSTED FRAMES.
+- Pin the hero over an extended scroll section.
+- Map scroll progress 0.0..1.0 directly to frame index 0..95.
+- Drawing must be responsive with object-fit cover logic and high-DPI canvas sizing.
+- Load the first frame quickly, then lazily preload neighboring frames with a limited number of simultaneous requests.
+- Advance immediately on scroll down; reverse exactly on scroll up; freeze at current frame when scrolling stops.
+- Overlay 'Architecture, revealed.' as elegant text, revealed partway through the scroll.
+- After the last frame, unpin and allow scrolling into Scene 02.
+- Honor prefers-reduced-motion and mobile performance requirements.
+- Clean up scroll listeners or GSAP ScrollTrigger instances when the component unmounts.
+- Use GSAP ScrollTrigger if it is available in this Artifact; otherwise use a native sticky section with measured scroll progress.
+- Do not insert fake SVG buildings, placeholder images, or an autoplay video instead of the actual frame sequence.
+- Never rewrite other sections of my approved website.
+- The URLs have to work from Claude's preview environment; if they do not, tell me exactly which network or hosting condition is blocking the media. Do not claim successful integration if images fail to load.
+
+Show me the updated live preview of Scene 01 and explain how you confirmed that down/up scrubbing is working.

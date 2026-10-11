@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111720" />
+  <title>AURELIA ESTATES — Cinematic Reveal Demo</title>
+  <style>
+    :root { color-scheme: dark; font-family: Arial, Helvetica, sans-serif; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: #f4eee6; background: #111720; }
+    header { position: fixed; z-index: 50; top: 0; left: 0; right: 0; display: flex; align-items: center;
+      justify-content: space-between; height: 78px; padding: 0 clamp(22px,4vw,70px);
+      background: linear-gradient(180deg, rgba(0,0,0,.42), transparent); }
+    .brand { font-family: Georgia, serif; font-size: 15px; letter-spacing: .45em; color: #fff; text-decoration: none; }
+    .menu { color:#fff; border:1px solid rgba(233,213,179,.85); background:rgba(15,19,26,.25);
+      padding:15px 26px; text-decoration:none; font-size: 10px; letter-spacing:.2em; }
+    .hero-track { position: relative; height: 510vh; }
+    .hero { position: sticky; top: 0; height: 100svh; width: 100%; overflow:hidden; background:#101721; }
+    .hero canvas { position: absolute; inset:0; display:block; width:100%; height:100%; }
+    .hero::after { content:""; position:absolute; inset:0; pointer-events:none;
+      background:linear-gradient(180deg,rgba(12,16,22,.12) 5%, transparent 41%, rgba(12,16,22,.05) 59%,rgba(4,7,11,.72) 100%); }
+    .fog { position:absolute; inset:0; z-index:1; pointer-events:none;
+      background: radial-gradient(ellipse at 40% 77%,rgba(233,219,202,.26),transparent 60%),
+        linear-gradient(0deg, rgba(223,207,187,.24), transparent 55%);
+      transition:opacity .05s linear; }
+    .hero-copy { position: absolute; z-index:3; left:7%; right:7%; bottom:clamp(90px,12vh,160px); max-width: 1100px; pointer-events:none; }
+    .eyebrow { font-size:11px; letter-spacing:.36em; color:#e8d4b9; text-transform:uppercase; margin-bottom:15px; }
+    .headline { margin:0; font:normal clamp(48px,7vw,114px)/.99 Georgia, 'Times New Roman', serif; letter-spacing:-.035em;
+      text-shadow:0 3px 24px rgba(0,0,0,.18); }
+    .intro { font:normal clamp(15px,1.4vw,19px)/1.8 Arial,sans-serif; max-width:490px;
+      color:rgba(255,255,255,.9); margin-top:19px; }
+    .progress { position:absolute; z-index:4; bottom:28px; left:7%; display:flex; align-items:center; gap:20px;
+      font-size:10px; letter-spacing:.25em; text-transform:uppercase; }
+    .meter { display:block; width:130px; height:1px; background:rgba(255,255,255,.35); }
+    .meter-fill { display:block; height:100%; background:#e6c59b; transform-origin:left; transform:scaleX(0); }
+    .scroll-hint { position:absolute; z-index:5; bottom:27px; right:6%; color:#f8eada; font-size:10px;
+      letter-spacing:.23em; text-transform:uppercase; }
+    .detail { min-height:86vh; padding:clamp(90px,14vh,170px) max(24px,7%); display:flex; flex-direction:column;
+      justify-content:center; background:#141c24; }
+    .detail h2 { font:normal clamp(45px,6vw,90px)/1.08 Georgia,serif; margin:0 0 22px; max-width:850px; }
+    .detail p { max-width:670px; color:#b9bfc0; line-height:1.75; font-size:17px; }
+    .detail a { color:#e6c59b; }
+    .notice { position:fixed; z-index:75; top:80px; left:50%; transform:translateX(-50%); background:rgba(5,10,15,.85); border:1px solid #bc9470; font-size:13px; padding:12px 17px; display:none; max-width:94vw; text-align:center; }
+    @media(max-width:650px) { .hero-copy { bottom:105px; } .scroll-hint { display:none; } .menu { padding:12px 15px; } .brand { font-size:12px; } .intro { font-size:14px; } }
+    @media(prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } .hero-track { height:100svh; } }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="#top" class="brand">AURELIA</a>
+    <a class="menu" href="#details">EXPLORE</a>
+  </header>
+  <div class="notice" id="notice" role="alert">Frames could not load. Keep the frames folder beside index.html.</div>
+  <main>
+    <section id="top" class="hero-track" aria-label="Scroll-controlled luxury residence reveal">
+      <div class="hero">
+        <canvas id="scene" aria-label="Luxury residential tower emerging through clouds"></canvas>
+        <div class="fog" id="fog"></div>
+        <div class="hero-copy" id="copy">
+          <div class="eyebrow">Sri Lanka · Luxury residences</div>
+          <h1 class="headline">Architecture,<br />revealed.</h1>
+          <p class="intro">A new perspective on extraordinary living.</p>
+        </div>
+        <div class="progress"><span id="progress-label">01 / 01 · CLOUD REVEAL</span><span class="meter"><span class="meter-fill" id="bar"></span></span><span id="percentage">0%</span></div>
+        <div class="scroll-hint">Scroll to discover ↓</div>
+      </div>
+    </section>
+    <section id="details" class="detail">
+      <div class="eyebrow">AURELIA ESTATES · CONCEPT DEMO</div>
+      <h2>Beyond the expected.</h2>
+      <p>This is an interactive demonstration built from your own AI-generated 8-second film. The building reveal is controlled by scroll position—not by video autoplay. Replace this concept copy and any AI property depiction with verified information before publishing a real estate listing.</p>
+      <p><a href="#top">Return to the cinematic reveal ↑</a></p>
+    </section>
+  </main>
+  <script>
+    (() => {
+      'use strict';
+      const COUNT = 96;
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const track = document.querySelector('.hero-track');
+      const canvas = document.getElementById('scene');
+      const ctx = canvas.getContext('2d', { alpha:false });
+      const copy = document.getElementById('copy');
+      const fog = document.getElementById('fog');
+      const bar = document.getElementById('bar');
+      const percentage = document.getElementById('percentage');
+      const notice = document.getElementById('notice');
+      const images = new Map();
+      const waiting = new Set();
+      const tasks = [];
+      let active=0, progress=0, current=0, raf=0, errors=0;
+      const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
+      const src = i => `frames/frame_${String(i).padStart(4,'0')}.webp`;
+      function schedule(i, priority=false) {
+        if(i<0||i>=COUNT||images.has(i)||waiting.has(i)) return;
+        waiting.add(i);
+        priority ? tasks.unshift(i) : tasks.push(i);
+        pump();
+      }
+      function pump() {
+        while(active < 5 && tasks.length) {
+          const n=tasks.shift(); active++;
+          const img=new Image();
+          img.onload=()=>{ images.set(n,img); active--; draw(); pump(); };
+          img.onerror=()=>{ waiting.delete(n); errors++; active--; if(errors===COUNT || (n===0&&images.size===0)) notice.style.display='block'; pump(); };
+          img.src=src(n);
+        }
+      }
+      function resize() {
+        const ratio=Math.min(window.devicePixelRatio||1,2);
+        canvas.width=Math.max(1,Math.round(canvas.clientWidth*ratio));
+        canvas.height=Math.max(1,Math.round(canvas.clientHeight*ratio));
+        draw();
+      }
+      function draw() {
+        if(!images.size) return;
+        let img=images.get(current);
+        if(!img) {
+          let nearest=null,dist=Infinity;
+          images.forEach((value,key)=>{const d=Math.abs(key-current);if(d<dist){dist=d;nearest=value;}});
+          img=nearest;
+        }
+        const cw=canvas.width,ch=canvas.height;
+        const s=Math.max(cw/img.width,ch/img.height);
+        const w=img.width*s,h=img.height*s;
+        ctx.drawImage(img,(cw-w)/2,(ch-h)/2,w,h);
+      }
+      function tick() {
+        raf=0;
+        const length=Math.max(1,track.offsetHeight-window.innerHeight);
+        const rect=track.getBoundingClientRect();
+        progress=reduced?0:clamp(-rect.top/length,0,1);
+        current=Math.round(progress*(COUNT-1));
+        for(let j=-3;j<=3;j++) schedule(current+j,true);
+        draw();
+        bar.style.transform=`scaleX(${progress})`;
+        percentage.textContent=`${Math.round(progress*100)}%`;
+        fog.style.opacity=String(clamp(.65-progress*.75,0,.65));
+        copy.style.opacity=String(clamp((progress-.12)*3.5,0,1));
+        copy.style.transform=`translateY(${Math.round((1-progress)*22)}px)`;
+      }
+      const requestTick=()=>{if(!raf)raf=requestAnimationFrame(tick)};
+      schedule(0,true);
+      for(let i=1;i<COUNT;i++) schedule(i);
+      resize();
+      window.addEventListener('resize',()=>{resize();requestTick()},{passive:true});
+      window.addEventListener('scroll',requestTick,{passive:true});
+      tick();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "scene": "AURELIA Scene 01 - Cloud Reveal",
+  "source_duration_seconds": 8,
+  "source_resolution": "1280x720",
+  "source_fps": 24,
+  "export_fps": 12,
+  "exported_frames": 96,
+  "frame_resolution": "1280x720",
+  "frame_type": "image/webp",
+  "frame_pattern": "frames/frame_%04d.webp",
+  "index_start": 0,
+  "index_end": 95,
+  "implementation": "Scroll position 0..1 maps directly to frame index 0..95"
+}
